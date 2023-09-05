@@ -2,6 +2,17 @@
 version: '3.8'
 
 services:
+  server:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - ./images:/app/images
+    depends_on:
+      - db
+    ports:
+      - '3200:3200'
 
   db:
     image: mysql
@@ -16,6 +27,8 @@ services:
       MYSQL_ROOT_PASSWORD: root
     ports:
       - '3306:3306'
+    command: --init-file /data/application/init.sql
     volumes:
       - ./mysql-data:/var/lib/mysql
-      # - ./mysql-data/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/init.sql:/data/application/init.sql
+      # - ./db:/docker-entrypoint-initdb.d

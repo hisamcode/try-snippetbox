@@ -32,6 +32,7 @@ func main() {
 	addr := flag.String("addr", "127.0.0.1:4000", "HTTP network address")
 	dsn := flag.String("dsn", "snippetbox:snippetbox@/snippetbox?parseTime=true", "MYSQL data source name")
 	debug := flag.Bool("debug", false, "Enable debug mode")
+	notls := flag.Bool("notls", false, "no tls mode")
 
 	flag.Parse()
 
@@ -91,7 +92,13 @@ func main() {
 	}
 
 	infoLog.Printf("Starting server on %s", *addr)
-	err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
+
+	if *notls {
+		err = srv.ListenAndServe()
+	} else {
+		err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
+	}
+
 	// log.Fatal(err)
 	errorLog.Fatal(err)
 }
